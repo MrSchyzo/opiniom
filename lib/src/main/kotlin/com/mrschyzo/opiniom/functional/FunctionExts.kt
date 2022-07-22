@@ -26,7 +26,7 @@ inline infix fun <A, B, C> ((A) -> B).andThen(crossinline next: (B) -> C): (A) -
  * @param input value to fix against the partial application
  * @return partial application of the function with the first parameter applied
  */
-infix fun <A, B, C> ((A, B) -> C).apply(input: A): (B) -> C = {
+infix fun <A, B, C> ((A, B) -> C).withFixed(input: A): (B) -> C = {
     this(input, it)
 }
 

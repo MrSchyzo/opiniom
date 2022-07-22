@@ -32,11 +32,13 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("com.google.guava:guava:31.0.1-jre")
 
-    // Use the Kotlin test library.
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation(kotlin("test"))
 
-    // Use the Kotlin JUnit integration.
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation("io.strikt:strikt-core:0.34.1")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 val compileKotlin: KotlinCompile by tasks

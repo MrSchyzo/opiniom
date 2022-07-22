@@ -6,7 +6,7 @@ package com.mrschyzo.opiniom.types
  * @property value
  * @constructor Create empty Result unwrap exception
  */
-class ResultUnwrapException(val value: Any) : RuntimeException(message = "Unsuccessfully unwrapping a result : $value")
+class ResultUnwrapException(val value: Any) : RuntimeException("Unsuccessfully unwrapping a result : $value")
 
 /**
  * `Either`ish flavor of [kotlin.Result]
