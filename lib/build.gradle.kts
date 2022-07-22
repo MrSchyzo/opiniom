@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.7.10"
+    id("org.jetbrains.dokka") version "1.7.10"
 
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
@@ -36,9 +37,6 @@ dependencies {
 
     // Use the Kotlin JUnit integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api("org.apache.commons:commons-math3:3.6.1")
 }
 
 val compileKotlin: KotlinCompile by tasks
