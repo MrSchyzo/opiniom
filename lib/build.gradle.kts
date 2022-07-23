@@ -8,10 +8,17 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * User Manual available at https://docs.gradle.org/7.5/userguide/building_java_projects.html
  */
 
+/**
+ * Useful links:
+ * - [jacoco gradle](https://docs.gradle.org/current/userguide/jacoco_plugin.html)
+ */
+
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.7.10"
     id("org.jetbrains.dokka") version "1.7.10"
+
+    jacoco
 
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
@@ -41,7 +48,35 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
 }
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.85".toBigDecimal()
+            }
+        }
+
+        rule {
+            isEnabled = false
+            element = "CLASS"
+            includes = listOf("org.gradle.*")
+
+            limit {
+                counter = "LINE"
+                value = "TOTALCOUNT"
+                maximum = "0.85".toBigDecimal()
+            }
+        }
+    }
+}
+
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {

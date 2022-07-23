@@ -6,7 +6,7 @@ package com.mrschyzo.opiniom.types
  * @property value
  * @constructor Create empty Result unwrap exception
  */
-class ResultUnwrapException(val value: Any) : RuntimeException("Unsuccessfully unwrapping a result: $value")
+data class ResultUnwrapException(val value: Any) : RuntimeException("Unsuccessfully unwrapping a result: $value")
 
 /**
  * `Either`ish flavor of [kotlin.Result]
@@ -173,12 +173,12 @@ sealed class Result<Left: Any, Right: Any> {
     /**
      * @return [Some] if [Ok], [None] if [Err]
      */
-    abstract fun asOk(): Maybe<Left>
+    abstract fun extractOk(): Maybe<Left>
 
     /**
      * @return [Some] if [Err], [None] if [Ok]
      */
-    abstract fun asErr(): Maybe<Right>
+    abstract fun extractErr(): Maybe<Right>
 }
 
 /**
@@ -227,9 +227,9 @@ data class Ok<Left: Any, Right: Any>(val left: Left): Result<Left, Right>() {
 
     override fun asKtResult(): kotlin.Result<Left> = kotlin.Result.success(left)
 
-    override fun asOk(): Maybe<Left> = Some(left)
+    override fun extractOk(): Maybe<Left> = Some(left)
 
-    override fun asErr(): Maybe<Right> = None()
+    override fun extractErr(): Maybe<Right> = None()
 }
 
 /**
@@ -278,7 +278,7 @@ data class Err<Left: Any, Right: Any>(val right: Right): Result<Left, Right>() {
 
     override fun asKtResult(): kotlin.Result<Left> = kotlin.Result.failure(ResultUnwrapException(right))
 
-    override fun asOk(): Maybe<Left> = None()
+    override fun extractOk(): Maybe<Left> = None()
 
-    override fun asErr(): Maybe<Right> = Some(right)
+    override fun extractErr(): Maybe<Right> = Some(right)
 }

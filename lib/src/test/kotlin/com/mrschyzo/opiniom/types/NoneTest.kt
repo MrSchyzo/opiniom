@@ -145,7 +145,7 @@ internal class NoneTest {
 
     @Test
     fun `filtering a None does not call filter but returns a new None`() {
-        val filter = spyk({ y:String -> false})
+        val filter = spyk({ _:String -> false })
         val input = None<String>()
 
         expectThat(input.filter(filter))
