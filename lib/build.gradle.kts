@@ -34,6 +34,8 @@ dependencies {
 
     testImplementation(kotlin("test"))
 
+    testImplementation("io.mockk:mockk:1.12.4")
+
     testImplementation("io.strikt:strikt-core:0.34.1")
 }
 
