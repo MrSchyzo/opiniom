@@ -38,9 +38,9 @@ internal class FunctionExtsKtTest {
         val append = (String::plus).flip()
         val prepend = (String::plus)
 
-        val wrapIntoParenthesis = (prepend withFixed "(") andThen (append withFixed ")")
+        val wrapIntoParentheses = (prepend withFixed "(") andThen (append withFixed ")")
 
-        expectThat(wrapIntoParenthesis("1,2,3"))
+        expectThat(wrapIntoParentheses("1,2,3"))
             .isEqualTo("(1,2,3)")
     }
 }

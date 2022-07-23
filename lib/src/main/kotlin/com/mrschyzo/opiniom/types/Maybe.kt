@@ -1,5 +1,7 @@
 package com.mrschyzo.opiniom.types
 
+import kotlin.reflect.KClass
+
 /**
  * Used to signal an unsafe unwrapping of a [Maybe]
  *
@@ -237,6 +239,7 @@ sealed class Maybe<T: Any> {
  */
 @Suppress("OVERRIDE_BY_INLINE")
 class None<T: Any>: Maybe<T>() {
+
     override fun unwrap(): T = throw UnwrapException("Unwrapping None")
 
     override fun <U : Any> orError(error: U): Result<T, U> = Err(error)
@@ -332,9 +335,14 @@ data class Some<T: Any>(
 
     override fun ifNone(block: () -> Unit) = Unit
 
-    override fun and(other: () -> Maybe<T>): Maybe<T> = other().or(Some(value))
+    override fun and(other: () -> Maybe<T>): Maybe<T> =
+        and(other())
 
-    override fun and(other: Maybe<T>): Maybe<T> = other.or(Some(value))
+    override fun and(other: Maybe<T>): Maybe<T> =
+        other.match(
+            some = {other},
+            none = ::None
+        )
 
     override fun runNone(block: () -> Unit): Maybe<T> = Some(value)
 
@@ -355,10 +363,16 @@ data class Some<T: Any>(
     override fun or(other: () -> Maybe<T>): Maybe<T> = Some(value)
 
     override fun xor(other: Maybe<T>): Maybe<T> =
-        other.flatmap<T> { None() }.or(Some(value))
+        other.match(
+            none = {Some(value)},
+            some = {None()}
+        )
 
     override inline fun xor(other: () -> Maybe<T>): Maybe<T> =
-        other().flatmap<T> { None() }.or(Some(value))
+        other().match(
+            none = {Some(value)},
+            some = {None()}
+        )
 
     override inline fun and(other: Maybe<T>, crossinline combine: (T, T) -> T): Maybe<T> =
         other.map { combine(value, it) }

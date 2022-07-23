@@ -96,7 +96,7 @@ internal class NoneTest {
         val input = None<Any>()
 
         expectThat(input.runSome(block))
-            .isNotEqualTo(input)
+            .isNotSameInstanceAs(input)
             .isA<None<Any>>()
         verify(exactly = 0) { block.invoke(any()) }
     }
@@ -116,7 +116,7 @@ internal class NoneTest {
         val input = None<Any>()
 
         expectThat(input.runNone(block))
-            .isNotEqualTo(input)
+            .isNotSameInstanceAs(input)
             .isA<None<Any>>()
         verify(exactly = 1) { block.invoke() }
     }
@@ -127,7 +127,7 @@ internal class NoneTest {
         val input = None<String>()
 
         expectThat(input.map(someClosure))
-            .isNotEqualTo(input)
+            .isNotSameInstanceAs(input)
             .isA<None<String>>()
         verify(exactly = 0) { someClosure.invoke(any()) }
     }
@@ -138,18 +138,18 @@ internal class NoneTest {
         val input = None<String>()
 
         expectThat(input.flatmap(someClosure))
-            .isNotEqualTo(input)
+            .isNotSameInstanceAs(input)
             .isA<None<String>>()
         verify(exactly = 0) { someClosure.invoke(any()) }
     }
 
     @Test
-    fun `filtring a None does not call filter but returns a new None`() {
+    fun `filtering a None does not call filter but returns a new None`() {
         val filter = spyk({ y:String -> false})
         val input = None<String>()
 
         expectThat(input.filter(filter))
-            .isNotEqualTo(input)
+            .isNotSameInstanceAs(input)
             .isA<None<String>>()
         verify(exactly = 0) { filter.invoke(any()) }
     }
@@ -194,7 +194,7 @@ internal class NoneTest {
         val input = None<String>()
 
         expectThat(input and other)
-            .isNotEqualTo(input)
+            .isNotSameInstanceAs(input)
             .isA<None<String>>()
     }
 
@@ -204,7 +204,7 @@ internal class NoneTest {
         val input = None<String>()
 
         expectThat(input and producer)
-            .isNotEqualTo(input)
+            .isNotSameInstanceAs(input)
             .isA<None<String>>()
         verify(exactly = 0) { producer.invoke() }
     }
@@ -216,7 +216,7 @@ internal class NoneTest {
         val input = None<String>()
 
         expectThat(input.and(other, combiner))
-            .isNotEqualTo(input)
+            .isNotSameInstanceAs(input)
             .isA<None<String>>()
         verify(exactly = 0) { combiner.invoke(any(), any()) }
     }
@@ -228,7 +228,7 @@ internal class NoneTest {
         val input = None<String>()
 
         expectThat(input.and(producer, combiner))
-            .isNotEqualTo(input)
+            .isNotSameInstanceAs(input)
             .isA<None<String>>()
         verify(exactly = 0) { combiner.invoke(any(), any()) }
         verify(exactly = 0) { producer.invoke() }
@@ -256,5 +256,31 @@ internal class NoneTest {
     fun `None is transformed as a null`() {
         expectThat(None<Any>().asNullable())
             .isEqualTo(null)
+    }
+
+    @Test
+    fun `None is not equal to other None types`() {
+        expectThat(None<String>() == None<Any>())
+            .isFalse()
+    }
+
+    @Test
+    fun `None is not equal to other same None types`() {
+        expectThat(None<String>() == None<String>())
+            .isFalse()
+    }
+
+    @Test
+    fun `None is only equal to its own instance`() {
+        val input = None<String>()
+
+        expectThat(input == input)
+            .isTrue()
+    }
+
+    @Test
+    fun `None is not equal to Some types`() {
+        expectThat(None<String>() == Some("string"))
+            .isFalse()
     }
 }

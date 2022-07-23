@@ -38,11 +38,21 @@ sealed class Result<Left: Any, Right: Any> {
             result.fold(onSuccess = ::Ok, onFailure = ::Err)
 
         /**
-         * Same as [Result.asKtResult]
+         * Extension method for [kotlin.Result] that is equivalent to [Result.from]
+         */
+        @JvmStatic
+        fun <Left: Any> kotlin.Result<Left>.eitherify(): Result<Left, Throwable> =
+            from(this)
+
+        /**
+         * Similar to [Result.asKtResult], but it avoids wrapping any [Right] into a [ResultUnwrapException]
          */
         @JvmStatic
         fun <Left: Any, Right: Throwable> Result<Left, Right>.asResult(): kotlin.Result<Left> =
-            this.asKtResult()
+            this.match(
+                ok = { kotlin.Result.success(it) },
+                err = { kotlin.Result.failure(it) }
+            )
     }
 
     /**
