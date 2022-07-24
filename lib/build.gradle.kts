@@ -12,6 +12,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * Useful links:
  * - [jacoco gradle](https://docs.gradle.org/current/userguide/jacoco_plugin.html)
  * - [codecov update](https://app.codecov.io/gh/MrSchyzo/opiniom/new)
+ * - [kover](https://github.com/Kotlin/kotlinx-kover)
+ * - [detekt](https://detekt.dev/docs/intro)
+ *  - [detekt suppress warnings](https://detekt.dev/docs/introduction/suppressing-rules/)
+ * - [ktlint](https://ktlint.github.io/#getting-started)
  */
 
 plugins {
@@ -19,7 +23,12 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.10"
     id("org.jetbrains.dokka") version "1.7.10"
 
-    jacoco
+    // Code Coverage reports
+    id("org.jetbrains.kotlinx.kover") version "0.5.0"
+    // Linting
+    id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
+    // Code smells, similar to Sonarqube
+    id("io.gitlab.arturbosch.detekt") version "1.21.0"
 
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
@@ -49,41 +58,33 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
 }
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test) // tests are required to run before generating the report
-    reports {
-        xml.required.set(true)
-        csv.required.set(true)
-    }
-}
-
-tasks.jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = "0.85".toBigDecimal()
-            }
-        }
-
-        rule {
-            isEnabled = false
-            element = "CLASS"
-            includes = listOf("org.gradle.*")
-
-            limit {
-                counter = "LINE"
-                value = "TOTALCOUNT"
-                maximum = "0.85".toBigDecimal()
-            }
-        }
-    }
-}
-
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
     languageVersion = "1.7"
+}
+
+tasks.koverVerify {
+    rule {
+        name = "Minimal line coverage rate in percent"
+        bound {
+            minValue = 85
+        }
+    }
+}
+
+tasks.koverXmlReport {
+    isEnabled = true
+}
+
+kover {
+    isDisabled = false
+    coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ)
+    intellijEngineVersion.set("1.0.656")
+    jacocoEngineVersion.set("0.8.8")
+    generateReportOnCheck = true
+    disabledProjects = setOf()
+    instrumentAndroidPackage = false
+    runAllTestsForProjectTask = true
 }

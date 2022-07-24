@@ -1,4 +1,4 @@
-package com.mrschyzo.opiniom.functional
+package com.github.mrschyzo.opiniom.functional
 
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
@@ -8,8 +8,8 @@ internal class FunctionExtsKtTest {
 
     @Test
     fun `composition works as expected`() {
-        val asList = {x: Int -> (1 .. x).toList()}
-        val commaJoin = {x: List<Int> -> x.joinToString(",")}
+        val asList = { x: Int -> (1..x).toList() }
+        val commaJoin = { x: List<Int> -> x.joinToString(",") }
 
         val composition = asList andThen commaJoin
 

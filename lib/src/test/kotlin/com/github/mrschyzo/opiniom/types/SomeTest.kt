@@ -1,13 +1,14 @@
-package com.mrschyzo.opiniom.types
+package com.github.mrschyzo.opiniom.types
 
-import com.mrschyzo.opiniom.functional.andThen
+import com.github.mrschyzo.opiniom.functional.andThen
 import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 import strikt.api.expectThat
-import strikt.assertions.*
+import strikt.assertions.isA
+import strikt.assertions.isEqualTo
+import strikt.assertions.isNotSameInstanceAs
+import strikt.assertions.isSameInstanceAs
 
 internal class SomeTest {
     @Test
@@ -24,7 +25,7 @@ internal class SomeTest {
 
     @Test
     fun `lazy onError-ing a Some never calls the producer`() {
-        val producer = spyk({"ERROR"})
+        val producer = spyk({ "ERROR" })
 
         expectThat(Some(10).orError(producer))
             .isEqualTo(Ok(10))
@@ -39,7 +40,7 @@ internal class SomeTest {
 
     @Test
     fun `lazy orElseThrow-ing a Some never calls the producer and unwraps the value`() {
-        val producer = spyk({OutOfMemoryError()})
+        val producer = spyk({ OutOfMemoryError() })
 
         expectThat(Some(20).orElseThrow(producer))
             .isEqualTo(20)
@@ -54,7 +55,7 @@ internal class SomeTest {
 
     @Test
     fun `lazy orElse-ing a Some nevr calls the producer and returns the contained value`() {
-        val producer = spyk({"fallback"})
+        val producer = spyk({ "fallback" })
 
         expectThat(Some("contained").orElse(producer))
             .isEqualTo("contained")
@@ -70,8 +71,8 @@ internal class SomeTest {
 
     @Test
     fun `match-ing a Some only calls once the 'some' closure, 'none' closure is not called at all`() {
-        val noneClosure = spyk({"abcde"})
-        val someClosure = spyk({_:String -> "y"})
+        val noneClosure = spyk({ "abcde" })
+        val someClosure = spyk({ _: String -> "y" })
 
         expectThat(Some("succ").match(some = someClosure, none = noneClosure))
             .isEqualTo("y")
@@ -101,7 +102,7 @@ internal class SomeTest {
 
     @Test
     fun `calling ifSome with Some calls the block only once`() {
-        val block = spyk({_:String->})
+        val block = spyk({ _: String -> })
 
         expectThat(Some("ciao").ifSome(block))
             .isEqualTo(Unit)
@@ -110,7 +111,7 @@ internal class SomeTest {
 
     @Test
     fun `calling runSome with None runs block only once and returns a new copy of Some`() {
-        val block = spyk({_:String->})
+        val block = spyk({ _: String -> })
         val input = Some("any")
 
         expectThat(input.runSome(block))
@@ -121,7 +122,7 @@ internal class SomeTest {
 
     @Test
     fun `mapping a Some calls transformation only once and returns a new Some`() {
-        val someClosure = spyk({_:String -> 1})
+        val someClosure = spyk({ _: String -> 1 })
         val input = Some("Any")
 
         expectThat(input.map(someClosure))
@@ -131,7 +132,7 @@ internal class SomeTest {
 
     @Test
     fun `flatmapping a Some calls transformation only once and returns a new Some`() {
-        val someClosure = spyk({y:Int -> Some(y.toString())})
+        val someClosure = spyk({ y: Int -> Some(y.toString()) })
         val input = Some(120)
 
         expectThat(input.flatmap(someClosure))
@@ -141,7 +142,7 @@ internal class SomeTest {
 
     @Test
     fun `flatmapping a Some calls transformation only once and returns a None if transformation returns None`() {
-        val someClosure = spyk({_:Int -> None<Nothing>()})
+        val someClosure = spyk({ _: Int -> None<Nothing>() })
         val input = Some(120)
 
         expectThat(input.flatmap(someClosure))
@@ -151,7 +152,7 @@ internal class SomeTest {
 
     @Test
     fun `filtering a Some calls filter once`() {
-        val filter = spyk({_:String -> false})
+        val filter = spyk({ _: String -> false })
         val input = Some("")
 
         input.filter(filter)
@@ -215,7 +216,7 @@ internal class SomeTest {
 
     @Test
     fun `Lazy Some xor None = copy of Some`() {
-        val other = spyk({None<String>()})
+        val other = spyk({ None<String>() })
         val input = Some("")
 
         expectThat(input xor other)
@@ -226,7 +227,7 @@ internal class SomeTest {
 
     @Test
     fun `Lazy Some xor Some = None`() {
-        val other = spyk({Some("abc")})
+        val other = spyk({ Some("abc") })
         val input = Some("")
 
         expectThat(input xor other)
@@ -255,7 +256,7 @@ internal class SomeTest {
     @Test
     fun `Lazy and-ing a Some calls the producer once and returns that Some`() {
         val output = Some("value")
-        val producer = spyk({output})
+        val producer = spyk({ output })
         val input = Some("toucha")
 
         expectThat(input and producer)
@@ -266,7 +267,7 @@ internal class SomeTest {
     @Test
     fun `Lazy and-ing a None calls the producer once and returns another None`() {
         val output = None<String>()
-        val producer = spyk({output})
+        val producer = spyk({ output })
         val input = Some("toucha")
 
         expectThat(input and producer)

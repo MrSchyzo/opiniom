@@ -1,6 +1,6 @@
-package com.mrschyzo.opiniom.types
+package com.github.mrschyzo.opiniom.types
 
-import com.mrschyzo.opiniom.types.Maybe.Companion.flatten
+import com.github.mrschyzo.opiniom.types.Maybe.Companion.flatten
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isA

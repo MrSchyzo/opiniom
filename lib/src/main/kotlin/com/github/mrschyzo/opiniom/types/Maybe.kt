@@ -1,13 +1,11 @@
-package com.mrschyzo.opiniom.types
-
-import kotlin.reflect.KClass
+package com.github.mrschyzo.opiniom.types
 
 /**
  * Used to signal an unsafe unwrapping of a [Maybe]
  *
  * @param message
  */
-class UnwrapException(message: String = "Unwrapping failed"): RuntimeException(message)
+class UnwrapException(message: String = "Unwrapping failed") : RuntimeException(message)
 
 /**
  * [Maybe] class defines a Maybe monad along with its operations
@@ -16,7 +14,8 @@ class UnwrapException(message: String = "Unwrapping failed"): RuntimeException(m
  *
  * @param T Type of the value potentially contained by [Maybe]
  */
-sealed class Maybe<T: Any> {
+@Suppress("TooManyFunctions")
+sealed class Maybe<T : Any> {
     companion object {
 
         /**
@@ -27,7 +26,7 @@ sealed class Maybe<T: Any> {
          * @return [None] if [v] is null, [Some] instance containing [v] otherwise
          */
         @JvmStatic
-        fun <T: Any> from(v: T?): Maybe<T> =
+        fun <T : Any> from(v: T?): Maybe<T> =
             v?.let(::Some) ?: None()
 
         /**
@@ -39,7 +38,7 @@ sealed class Maybe<T: Any> {
          * @return A flattened [Maybe]
          */
         @JvmStatic
-        fun <Inner: Any> Maybe<Maybe<Inner>>.flatten(): Maybe<Inner> =
+        fun <Inner : Any> Maybe<Maybe<Inner>>.flatten(): Maybe<Inner> =
             this.flatmap { it }
     }
 
@@ -60,12 +59,12 @@ sealed class Maybe<T: Any> {
      * @param error error variant
      * @return [Ok] with the contained value if [Some], [Err] with the [error] if [None]
      */
-    abstract fun <U: Any> orError(error: U): Result<T, U>
+    abstract fun <U : Any> orError(error: U): Result<T, U>
 
     /**
      * Lazy version of [orError]
      */
-    abstract fun <U: Any> orError(error: () -> U): Result<T, U>
+    abstract fun <U : Any> orError(error: () -> U): Result<T, U>
 
     /**
      * Similar to [unwrap], but you decide what [Throwable] is to be thrown in case of [None]
@@ -74,12 +73,12 @@ sealed class Maybe<T: Any> {
      * @param ex exception to throw, if [None]
      * @return the value if [Some], throws [error] if [None]
      */
-    abstract fun <U: Throwable> orElseThrow(ex: U): T
+    abstract fun <U : Throwable> orElseThrow(ex: U): T
 
     /**
      * Lazy version of [orElseThrow]
      */
-    abstract fun <U: Throwable> orElseThrow(ex: () -> U): T
+    abstract fun <U : Throwable> orElseThrow(ex: () -> U): T
 
     /**
      * Returns the value or falls back to the given value
@@ -116,7 +115,7 @@ sealed class Maybe<T: Any> {
      * @param none generation of a value, if [None]
      * @return an instance of [U]
      */
-    abstract fun <U: Any> match(some: (T) -> U, none: () -> U): U
+    abstract fun <U : Any> match(some: (T) -> U, none: () -> U): U
 
     /**
      * Runs [block] if this is [Some], consuming the [Maybe]
@@ -150,14 +149,14 @@ sealed class Maybe<T: Any> {
      * @param transform conversion function
      * @return [Some] with a transformed value, [None] if no value is contained
      */
-    abstract fun <U: Any> map(transform: (T) -> U): Maybe<U>
+    abstract fun <U : Any> map(transform: (T) -> U): Maybe<U>
 
     /**
      * Similar to [map]
      *
      * Can be roughly seen as a [map] + [flatten]
      */
-    abstract fun <U: Any> flatmap(transform: (T) -> Maybe<U>): Maybe<U>
+    abstract fun <U : Any> flatmap(transform: (T) -> Maybe<U>): Maybe<U>
 
     /**
      * Returns a copy of [Some] if the contained value respects the [filter], [None] otherwise
@@ -220,7 +219,7 @@ sealed class Maybe<T: Any> {
      * @param other the other [Maybe] to combine with this
      * @return returns a new [Maybe] that contains a [Pair] of both values, [None] otherwise
      */
-    abstract infix fun <U: Any> zip(other: Maybe<U>): Maybe<Pair<T, U>>
+    abstract infix fun <U : Any> zip(other: Maybe<U>): Maybe<Pair<T, U>>
 
     /**
      * @return Singleton if [Some], empty if [None]
@@ -233,12 +232,11 @@ sealed class Maybe<T: Any> {
     abstract fun asNullable(): T?
 }
 
-
 /**
  * [None] represents a [Maybe] without any value
  */
-@Suppress("OVERRIDE_BY_INLINE")
-class None<T: Any>: Maybe<T>() {
+@Suppress("OVERRIDE_BY_INLINE", "TooManyFunctions")
+class None<T : Any> : Maybe<T>() {
 
     override fun unwrap(): T = throw UnwrapException("Unwrapping None")
 
@@ -301,10 +299,10 @@ class None<T: Any>: Maybe<T>() {
 /**
  * [Some] represents a [Maybe] with a value
  */
-@Suppress("OVERRIDE_BY_INLINE")
-data class Some<T: Any>(
+@Suppress("OVERRIDE_BY_INLINE", "TooManyFunctions")
+data class Some<T : Any>(
     @PublishedApi internal val value: T
-): Maybe<T>() {
+) : Maybe<T>() {
     override fun unwrap(): T = value
 
     override fun <U : Any> orError(error: U): Result<T, U> =
@@ -340,7 +338,7 @@ data class Some<T: Any>(
 
     override fun and(other: Maybe<T>): Maybe<T> =
         other.match(
-            some = {other},
+            some = { other },
             none = ::None
         )
 
@@ -364,14 +362,14 @@ data class Some<T: Any>(
 
     override fun xor(other: Maybe<T>): Maybe<T> =
         other.match(
-            none = {Some(value)},
-            some = {None()}
+            none = { Some(value) },
+            some = { None() }
         )
 
     override inline fun xor(other: () -> Maybe<T>): Maybe<T> =
         other().match(
-            none = {Some(value)},
-            some = {None()}
+            none = { Some(value) },
+            some = { None() }
         )
 
     override inline fun and(other: Maybe<T>, crossinline combine: (T, T) -> T): Maybe<T> =

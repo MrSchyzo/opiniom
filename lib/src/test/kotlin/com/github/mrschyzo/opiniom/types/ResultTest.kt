@@ -1,11 +1,10 @@
-package com.mrschyzo.opiniom.types
+package com.github.mrschyzo.opiniom.types
 
-import com.mrschyzo.opiniom.types.Result.Companion.asResult
-import com.mrschyzo.opiniom.types.Result.Companion.eitherify
+import com.github.mrschyzo.opiniom.types.Result.Companion.asResult
+import com.github.mrschyzo.opiniom.types.Result.Companion.eitherify
 import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
-
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
@@ -14,7 +13,7 @@ internal class ResultTest {
     @Test
     fun `exception-throwing block is captured in Err`() {
         val exception = Exception()
-        val throwing: () -> Unit = spyk({throw exception})
+        val throwing: () -> Unit = spyk({ throw exception })
 
         expectThat(Result.from(throwing))
             .isEqualTo(Err(exception))
@@ -23,7 +22,7 @@ internal class ResultTest {
 
     @Test
     fun `successful block result is captured in Ok`() {
-        val successful: () -> Int = spyk({120})
+        val successful: () -> Int = spyk({ 120 })
 
         expectThat(Result.from(successful))
             .isEqualTo(Ok(120))

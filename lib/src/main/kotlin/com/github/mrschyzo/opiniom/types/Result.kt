@@ -1,4 +1,4 @@
-package com.mrschyzo.opiniom.types
+package com.github.mrschyzo.opiniom.types
 
 /**
  * Result unwrap exception
@@ -17,13 +17,15 @@ data class ResultUnwrapException(val value: Any) : RuntimeException("Unsuccessfu
  * @param Right
  * @constructor Create empty Result
  */
-sealed class Result<Left: Any, Right: Any> {
+@Suppress("TooManyFunctions")
+sealed class Result<Left : Any, Right : Any> {
     companion object {
         /**
          * The equivalent to [kotlin.runCatching]
          */
         @JvmStatic
-        inline fun <Left: Any> from(block: () -> Left): Result<Left, Throwable> =
+        @Suppress("TooGenericExceptionCaught")
+        inline fun <Left : Any> from(block: () -> Left): Result<Left, Throwable> =
             try {
                 Ok(block())
             } catch (e: Throwable) {
@@ -34,21 +36,21 @@ sealed class Result<Left: Any, Right: Any> {
          * Converts a [kotlin.Result] into a [Result]
          */
         @JvmStatic
-        fun <Left: Any> from(result: kotlin.Result<Left>): Result<Left, Throwable> =
+        fun <Left : Any> from(result: kotlin.Result<Left>): Result<Left, Throwable> =
             result.fold(onSuccess = ::Ok, onFailure = ::Err)
 
         /**
          * Extension method for [kotlin.Result] that is equivalent to [Result.from]
          */
         @JvmStatic
-        fun <Left: Any> kotlin.Result<Left>.eitherify(): Result<Left, Throwable> =
+        fun <Left : Any> kotlin.Result<Left>.eitherify(): Result<Left, Throwable> =
             from(this)
 
         /**
          * Similar to [Result.asKtResult], but it avoids wrapping any [Right] into a [ResultUnwrapException]
          */
         @JvmStatic
-        fun <Left: Any, Right: Throwable> Result<Left, Right>.asResult(): kotlin.Result<Left> =
+        fun <Left : Any, Right : Throwable> Result<Left, Right>.asResult(): kotlin.Result<Left> =
             this.match(
                 ok = { kotlin.Result.success(it) },
                 err = { kotlin.Result.failure(it) }
@@ -106,7 +108,7 @@ sealed class Result<Left: Any, Right: Any> {
      * @param transform transformation that consumes [Left]
      * @return A transformed [Ok], if [Ok]; [Err] otherwise
      */
-    abstract fun <Left2: Any> mapOk(transform: (Left) -> Left2): Result<Left2, Right>
+    abstract fun <Left2 : Any> mapOk(transform: (Left) -> Left2): Result<Left2, Right>
 
     /**
      * Similar to [mapOk], but it avoids returning nesting [Result]
@@ -115,17 +117,17 @@ sealed class Result<Left: Any, Right: Any> {
      * @param transform transformation that consumes [Left]
      * @return A transformed [Ok], if this is [Ok]; [Err] if this is [Err], or [transform] returns [Err]
      */
-    abstract fun <Left2: Any> flatmapOk(transform: (Left) -> Result<Left2, Right>): Result<Left2, Right>
+    abstract fun <Left2 : Any> flatmapOk(transform: (Left) -> Result<Left2, Right>): Result<Left2, Right>
 
     /**
      * Analogous to [mapOk], but for [Err] value
      */
-    abstract fun <Right2: Any> mapErr(transform: (Right) -> Right2): Result<Left, Right2>
+    abstract fun <Right2 : Any> mapErr(transform: (Right) -> Right2): Result<Left, Right2>
 
     /**
      * Analogous to [flatmapOk], but for [Err] value
      */
-    abstract fun <Right2: Any> flatmapErr(transform: (Right) -> Result<Left, Right2>): Result<Left, Right2>
+    abstract fun <Right2 : Any> flatmapErr(transform: (Right) -> Result<Left, Right2>): Result<Left, Right2>
 
     /**
      * `and` version for the [Result]
@@ -163,7 +165,7 @@ sealed class Result<Left: Any, Right: Any> {
      * @receiver
      * @return
      */
-    abstract fun <U: Any> match(ok: (Left) -> U, err: (Right) -> U): U
+    abstract fun <U : Any> match(ok: (Left) -> U, err: (Right) -> U): U
 
     /**
      * @return a [kotlin.Result.success] if [Ok], [kotlin.Result.failure] with [ResultUnwrapException] if [Err]
@@ -188,8 +190,8 @@ sealed class Result<Left: Any, Right: Any> {
  * @param Right irrelevant
  * @property left value held
  */
-@Suppress("OVERRIDE_BY_INLINE")
-data class Ok<Left: Any, Right: Any>(val left: Left): Result<Left, Right>() {
+@Suppress("OVERRIDE_BY_INLINE", "TooManyFunctions")
+data class Ok<Left : Any, Right : Any>(val left: Left) : Result<Left, Right>() {
     override fun unwrap(): Left = left
 
     override fun isOk(): Boolean = true
@@ -239,8 +241,8 @@ data class Ok<Left: Any, Right: Any>(val left: Left): Result<Left, Right>() {
  * @param Right value held
  * @property right value held
  */
-@Suppress("OVERRIDE_BY_INLINE")
-data class Err<Left: Any, Right: Any>(val right: Right): Result<Left, Right>() {
+@Suppress("OVERRIDE_BY_INLINE", "TooManyFunctions")
+data class Err<Left : Any, Right : Any>(val right: Right) : Result<Left, Right>() {
     override fun unwrap(): Left =
         throw ResultUnwrapException(right)
 
@@ -261,7 +263,8 @@ data class Err<Left: Any, Right: Any>(val right: Right): Result<Left, Right>() {
 
     override fun <Left2 : Any> flatmapOk(transform: (Left) -> Result<Left2, Right>): Result<Left2, Right> = Err(right)
 
-    override inline fun <Right2 : Any> mapErr(transform: (Right) -> Right2): Result<Left, Right2> = Err(transform(right))
+    override inline fun <Right2 : Any> mapErr(transform: (Right) -> Right2): Result<Left, Right2> =
+        Err(transform(right))
 
     override inline fun <Right2 : Any> flatmapErr(transform: (Right) -> Result<Left, Right2>): Result<Left, Right2> =
         transform(right)

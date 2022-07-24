@@ -1,4 +1,4 @@
-package com.mrschyzo.opiniom.functional
+package com.github.mrschyzo.opiniom.functional
 
 /**
  * Function composition
@@ -40,6 +40,6 @@ infix fun <A, B, C> ((A, B) -> C).withFixed(input: A): (B) -> C = {
  * @param C output
  * @return a function with the two input arguments flipped
  */
-fun <A, B, C> ((A, B) -> C).flip(): (B, A) -> C = {
-    b, a -> this(a, b)
+fun <A, B, C> ((A, B) -> C).flip(): (B, A) -> C = { b, a ->
+    this(a, b)
 }

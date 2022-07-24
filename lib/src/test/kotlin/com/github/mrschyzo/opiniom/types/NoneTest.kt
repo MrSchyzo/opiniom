@@ -1,12 +1,17 @@
-package com.mrschyzo.opiniom.types
+package com.github.mrschyzo.opiniom.types
 
-import com.mrschyzo.opiniom.functional.andThen
+import com.github.mrschyzo.opiniom.functional.andThen
 import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.api.expectThrows
-import strikt.assertions.*
+import strikt.assertions.hasSize
+import strikt.assertions.isA
+import strikt.assertions.isEqualTo
+import strikt.assertions.isFalse
+import strikt.assertions.isNotSameInstanceAs
+import strikt.assertions.isTrue
 
 internal class NoneTest {
 
@@ -23,7 +28,7 @@ internal class NoneTest {
 
     @Test
     fun `lazy onError-ing a None calls the producer exactly once`() {
-        val producer = spyk({"ERROR"})
+        val producer = spyk({ "ERROR" })
         val error = None<Nothing>().orError(producer)
 
         verify(exactly = 1) { producer.invoke() }
@@ -41,7 +46,7 @@ internal class NoneTest {
     @Test
     fun `lazy orElseThrow-ing a None calls the producer exactly once and throws the given exception`() {
         val exception = OutOfMemoryError()
-        val producer = spyk({exception})
+        val producer = spyk({ exception })
 
         expectThrows<OutOfMemoryError> { None<Nothing>().orElseThrow(producer) }
             .isEqualTo(exception)
@@ -56,7 +61,7 @@ internal class NoneTest {
 
     @Test
     fun `lazy orElse-ing a None calls the producer only once and returns the expected fallback value`() {
-        val producer = spyk({"fallback"})
+        val producer = spyk({ "fallback" })
 
         expectThat(None<String>().orElse(producer))
             .isEqualTo("fallback")
@@ -72,8 +77,8 @@ internal class NoneTest {
 
     @Test
     fun `match-ing a None only calls once the 'none' closure, 'some' closure is not called at all`() {
-        val noneClosure = spyk({"abcde"})
-        val someClosure = spyk({y:String -> y})
+        val noneClosure = spyk({ "abcde" })
+        val someClosure = spyk({ y: String -> y })
 
         expectThat(None<String>().match(some = someClosure, none = noneClosure))
             .isEqualTo("abcde")
@@ -83,7 +88,7 @@ internal class NoneTest {
 
     @Test
     fun `calling ifSome with None does nothing`() {
-        val block = spyk({_:String -> })
+        val block = spyk({ _: String -> })
 
         expectThat(None<String>().ifSome(block))
             .isEqualTo(Unit)
@@ -92,7 +97,7 @@ internal class NoneTest {
 
     @Test
     fun `calling runSome with None does nothing but returns a new None`() {
-        val block = spyk({_:Any -> })
+        val block = spyk({ _: Any -> })
         val input = None<Any>()
 
         expectThat(input.runSome(block))
@@ -123,7 +128,7 @@ internal class NoneTest {
 
     @Test
     fun `mapping a None does not call transformation but returns a new None`() {
-        val someClosure = spyk({y:String -> y})
+        val someClosure = spyk({ y: String -> y })
         val input = None<String>()
 
         expectThat(input.map(someClosure))
@@ -134,7 +139,7 @@ internal class NoneTest {
 
     @Test
     fun `flatmapping a None does not call transformation but returns a new None`() {
-        val someClosure = spyk({y:String -> Some(y)})
+        val someClosure = spyk({ y: String -> Some(y) })
         val input = None<String>()
 
         expectThat(input.flatmap(someClosure))
@@ -145,7 +150,7 @@ internal class NoneTest {
 
     @Test
     fun `filtering a None does not call filter but returns a new None`() {
-        val filter = spyk({ _:String -> false })
+        val filter = spyk({ _: String -> false })
         val input = None<String>()
 
         expectThat(input.filter(filter))
@@ -212,7 +217,7 @@ internal class NoneTest {
     @Test
     fun `And-ing a None with combiner returns a new None without calling the combiner`() {
         val other = Some("value")
-        val combiner = spyk({x:String,_:String->x})
+        val combiner = spyk({ x: String, _: String -> x })
         val input = None<String>()
 
         expectThat(input.and(other, combiner))
@@ -224,7 +229,7 @@ internal class NoneTest {
     @Test
     fun `Lazy and-ing a None with combiner calls neither producer nor combiner and returns a new None`() {
         val producer = spyk({ Some("value") })
-        val combiner = spyk({x:String,_:String->x})
+        val combiner = spyk({ x: String, _: String -> x })
         val input = None<String>()
 
         expectThat(input.and(producer, combiner))

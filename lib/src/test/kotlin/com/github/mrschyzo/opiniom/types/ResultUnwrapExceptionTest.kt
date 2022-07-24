@@ -1,8 +1,6 @@
-package com.mrschyzo.opiniom.types
+package com.github.mrschyzo.opiniom.types
 
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 

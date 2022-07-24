@@ -1,13 +1,10 @@
-package com.mrschyzo.opiniom.types
+package com.github.mrschyzo.opiniom.types
 
-import com.mrschyzo.opiniom.functional.andThen
+import com.github.mrschyzo.opiniom.functional.andThen
 import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 import strikt.api.expectThat
-import strikt.api.expectThrows
 import strikt.assertions.isA
 import strikt.assertions.isEqualTo
 import strikt.assertions.isNotSameInstanceAs
@@ -30,7 +27,7 @@ internal class OkTest {
 
     @Test
     fun `ifErr does nothing if Ok`() {
-        val block = spyk({_:Any -> })
+        val block = spyk({ _: Any -> })
 
         expectThat(Ok<Int, Any>(10).ifErr(block))
             .isA<Unit>()
@@ -39,7 +36,7 @@ internal class OkTest {
 
     @Test
     fun `runErr does nothing if Ok but it returns a new copy of Ok`() {
-        val block = spyk({_:Any -> })
+        val block = spyk({ _: Any -> })
         val input = Ok<Int, Any>(10)
 
         expectThat(input.runErr(block))
@@ -50,7 +47,7 @@ internal class OkTest {
 
     @Test
     fun `ifOk runs closure only once if Ok`() {
-        val block = spyk({_:Int -> })
+        val block = spyk({ _: Int -> })
 
         expectThat(Ok<Int, Any>(10).ifOk(block))
             .isA<Unit>()
@@ -59,7 +56,7 @@ internal class OkTest {
 
     @Test
     fun `runOk runs closure only once if Ok and it returns a new copy of Ok`() {
-        val block = spyk({_:Int -> })
+        val block = spyk({ _: Int -> })
         val input = Ok<Int, Any>(10)
 
         expectThat(input.runOk(block))
@@ -70,7 +67,7 @@ internal class OkTest {
 
     @Test
     fun `mapErr does nothing if Ok but it returns a new Ok with different Right type`() {
-        val transformation = spyk({ _:Any -> 15.0})
+        val transformation = spyk({ _: Any -> 15.0 })
 
         expectThat(Ok<Int, Any>(10).mapErr(transformation))
             .isA<Ok<Int, Double>>()
@@ -81,7 +78,7 @@ internal class OkTest {
     @Test
     fun `flatmapErr does nothing if Ok but it returns a new Ok with different Right type`() {
         val output = Ok<Int, String>(118)
-        val transformation = spyk({ _:Any -> output})
+        val transformation = spyk({ _: Any -> output })
 
         expectThat(Ok<Int, Any>(10).flatmapErr(transformation))
             .isA<Ok<Int, String>>()
@@ -102,7 +99,7 @@ internal class OkTest {
     @Test
     fun `flatmapOk returns a new Err with same Right type`() {
         val output = Err<String, String>("")
-        val transformation = spyk({ _:Int -> output})
+        val transformation = spyk({ _: Int -> output })
 
         expectThat(Ok<Int, String>(10).flatmapOk(transformation))
             .isEqualTo(output)
@@ -113,7 +110,7 @@ internal class OkTest {
     @Test
     fun `flatmapOk returns a new Ok with same Right type`() {
         val output = Ok<Double, String>(420.69)
-        val transformation = spyk({ _:Int -> output})
+        val transformation = spyk({ _: Int -> output })
 
         expectThat(Ok<Int, String>(10).flatmapOk(transformation))
             .isEqualTo(output)
@@ -145,7 +142,7 @@ internal class OkTest {
     fun `Ok lazy-and Ok = Ok returned by producer`() {
         val input = Ok<String, Int>("ciao")
         val other = Ok<String, Int>("10.0")
-        val producer = spyk({other})
+        val producer = spyk({ other })
 
         expectThat(input and producer)
             .isSameInstanceAs(other)
@@ -157,7 +154,7 @@ internal class OkTest {
     fun `Ok lazy-and Err = Err returned by producer`() {
         val input = Ok<String, Int>("10")
         val other = Err<String, Int>(420)
-        val producer = spyk({other})
+        val producer = spyk({ other })
 
         expectThat(input and producer)
             .isSameInstanceAs(other)
@@ -189,7 +186,7 @@ internal class OkTest {
     fun `Ok lazy-or Ok = copy of first Ok with short-circuiting`() {
         val input = Ok<String, Int>("ciao")
         val other = Ok<String, Int>("10.0")
-        val producer = spyk({other})
+        val producer = spyk({ other })
 
         expectThat(input or producer)
             .isNotSameInstanceAs(input)
@@ -201,7 +198,7 @@ internal class OkTest {
     fun `Ok lazy-or Err = copy of first Ok with short-circuiting`() {
         val input = Ok<String, Int>("ciao")
         val other = Err<String, Int>(420)
-        val producer = spyk({other})
+        val producer = spyk({ other })
 
         expectThat(input or producer)
             .isNotSameInstanceAs(input)
