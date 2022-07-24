@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 /**
  * Useful links:
  * - [jacoco gradle](https://docs.gradle.org/current/userguide/jacoco_plugin.html)
+ * - [codecov update](https://app.codecov.io/gh/MrSchyzo/opiniom/new)
  */
 
 plugins {
@@ -53,6 +54,10 @@ tasks.test {
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
+    reports {
+        xml.required.set(true)
+        csv.required.set(true)
+    }
 }
 
 tasks.jacocoTestCoverageVerification {
