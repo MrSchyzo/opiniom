@@ -1,4 +1,4 @@
-package com.github.mrschyzo.opiniom.types
+package io.github.mrschyzo.opiniom.types
 
 /**
  * Used to signal an unsafe unwrapping of a [Maybe]

@@ -18,6 +18,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * - [ktlint](https://ktlint.github.io/#getting-started)
  */
 
+val whoami = "mrschyzo"
+val projectName = rootProject.name
+
+group = "io.github.$whoami"
+version = "0.1.0"
+
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.7.10"
@@ -32,6 +38,8 @@ plugins {
 
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
+    `maven-publish`
+    signing
 }
 
 repositories {
@@ -54,6 +62,62 @@ dependencies {
     testImplementation("io.mockk:mockk:1.12.4")
 
     testImplementation("io.strikt:strikt-core:0.34.1")
+}
+
+publishing {
+    publications.all {
+        (this as MavenPublication).pom {
+            val projectPath = "$whoami/$projectName"
+
+            name.set(projectName)
+            description.set("Opinionated idiom")
+            url.set("https://github.com/$projectPath")
+
+            organization {
+                name.set(group.toString())
+                url.set("https://github.com/$whoami")
+            }
+            licenses {
+                license {
+                    name.set("MIT")
+                    url.set("https://github.com/$projectPath/blob/master/LICENSE")
+                }
+            }
+            scm {
+                url.set("https://github.com/$projectPath")
+                connection.set("scm:git:git://github.com/$projectPath.git")
+                developerConnection.set(url.get())
+            }
+            developers {
+                developer {
+                    id.set(whoami)
+                    name.set("Marco Catapano")
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                val nexusUsername: String? by project
+                val nexusPassword: String? by project
+                username = nexusUsername
+                password = nexusPassword
+            }
+
+            val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+            val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+        }
+    }
+}
+
+tasks.jar {
+    archiveBaseName.set(projectName)
+}
+
+signing {
+    sign(publishing.publications)
 }
 
 tasks.test {
