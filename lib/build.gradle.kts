@@ -16,6 +16,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * - [detekt](https://detekt.dev/docs/intro)
  *  - [detekt suppress warnings](https://detekt.dev/docs/introduction/suppressing-rules/)
  * - [ktlint](https://ktlint.github.io/#getting-started)
+ * - [publish to OSSRH](https://central.sonatype.org/publish/publish-guide/#deployment)
+ *  - [gradle specific](https://central.sonatype.org/publish/publish-gradle/)
+ *  - take inspiration from [here](https://github.com/doyaaaaaken/kotlin-csv/blob/master/build.gradle.kts)
  */
 
 val whoami = "mrschyzo"
@@ -105,8 +108,8 @@ publishing {
                 password = nexusPassword
             }
 
-            val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-            val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
             url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
         }
     }
