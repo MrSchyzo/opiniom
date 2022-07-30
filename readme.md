@@ -4,6 +4,26 @@
 
 Just a collection of data structures and extension functions for opinionated idioms.
 
+## Usage
+
+For gradle:
+```kotlin
+dependencies {
+    // ... your stuff
+    implementation("io.github.mrschyzo:opiniom:0.1.0")
+    // .. your stuff
+}
+```
+
+## Publish library
+
+Prepare your `~/.gradle/gradle.properties` [accordingly](https://central.sonatype.org/publish/publish-gradle/#locate-and-examine-your-staging-repository)
+and then run:
+
+```shell
+./gradlew publish
+```
+
 ## git hooks to install
 In your shell, run:
 ```shell
