@@ -1,7 +1,7 @@
-package com.github.mrschyzo.opiniom.types
+package io.github.mrschyzo.opiniom.types
 
-import com.github.mrschyzo.opiniom.types.Result.Companion.asResult
-import com.github.mrschyzo.opiniom.types.Result.Companion.eitherify
+import io.github.mrschyzo.opiniom.types.Result.Companion.asResult
+import io.github.mrschyzo.opiniom.types.Result.Companion.eitherify
 import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.Test

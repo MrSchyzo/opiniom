@@ -1,4 +1,4 @@
-package com.github.mrschyzo.opiniom.functional
+package io.github.mrschyzo.opiniom.functional
 
 /**
  * Function composition

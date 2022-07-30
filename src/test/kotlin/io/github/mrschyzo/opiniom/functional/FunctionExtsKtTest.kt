@@ -1,4 +1,4 @@
-package com.github.mrschyzo.opiniom.functional
+package io.github.mrschyzo.opiniom.functional
 
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat

@@ -1,4 +1,4 @@
-package com.github.mrschyzo.opiniom.types
+package io.github.mrschyzo.opiniom.types
 
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat

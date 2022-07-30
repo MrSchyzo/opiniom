@@ -1,6 +1,6 @@
-package com.github.mrschyzo.opiniom.types
+package io.github.mrschyzo.opiniom.types
 
-import com.github.mrschyzo.opiniom.functional.andThen
+import io.github.mrschyzo.opiniom.functional.andThen
 import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
