@@ -1,6 +1,15 @@
 package io.github.mrschyzo.opiniom.functional
 
 /**
+ * Identity function
+ *
+ * @param T
+ * @param t
+ * @return
+ */
+fun <T> identity(t: T): T = t
+
+/**
  * Function composition
  *
  * Usage: `(f andThen g)(x)`, that means `g(f(x))`
@@ -43,3 +52,61 @@ infix fun <A, B, C> ((A, B) -> C).withFixed(input: A): (B) -> C = {
 fun <A, B, C> ((A, B) -> C).flip(): (B, A) -> C = { b, a ->
     this(a, b)
 }
+
+/**
+ * Conditional application of endomorphism
+ *
+ * Usage: `(foo if [condition])(x)`
+ *
+ * if the [condition] is true, return [this] function
+ *
+ * if the [condition] is false, return [identity] function reference
+ *
+ * @param O
+ * @param condition
+ * @return
+ */
+@Suppress("FunctionNaming")
+infix fun <O> ((O) -> O).`if`(condition: Boolean): (O) -> O =
+    if (condition)
+        this
+    else
+        ::identity
+
+/**
+ * Lazy version of [if]
+ *
+ * @param O
+ * @param condition
+ * @return
+ */
+@Suppress("FunctionNaming")
+inline infix fun <O> ((O) -> O).`if`(crossinline condition: (O) -> Boolean): (O) -> O = { value: O ->
+    (this `if` condition(value))(value)
+}
+
+/**
+ * Conditional application of endomorphism
+ *
+ * Usage: `(foo unless [condition])(x)`
+ *
+ * if the [condition] is false, return [this] function
+ *
+ * if the [condition] is true, return [identity] function reference
+ *
+ * @param O
+ * @param condition
+ * @return
+ */
+infix fun <O> ((O) -> O).unless(condition: Boolean): (O) -> O =
+    this `if` (!condition)
+
+/**
+ * Lazy version of [unless]
+ *
+ * @param O
+ * @param condition
+ * @return
+ */
+inline infix fun <O> ((O) -> O).unless(crossinline condition: (O) -> Boolean): (O) -> O =
+    this `if` (condition andThen Boolean::not)

@@ -10,7 +10,7 @@ For gradle:
 ```kotlin
 dependencies {
     // ... your stuff
-    implementation("io.github.mrschyzo:opiniom:0.1.0")
+    implementation("io.github.mrschyzo:opiniom:0.2.0")
     // .. your stuff
 }
 ```

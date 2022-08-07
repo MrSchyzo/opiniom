@@ -32,12 +32,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 */
 
 val whoami = "mrschyzo"
+val projectVersion = "0.2.0"
 val projectName = rootProject.name
 val projectPath = "$whoami/$projectName"
+val projectGroup = "io.github.$whoami"
 
 allprojects {
-    group = "io.github.mrschyzo"
-    version = "0.1.0"
+    group = projectGroup
+    version = projectVersion
 }
 
 java {
@@ -138,8 +140,8 @@ publishing {
             from(components["java"])
 
             pom {
-                version = "0.1.0"
-                groupId = "io.github.mrschyzo"
+                version = projectVersion
+                groupId = projectGroup
                 name.set(projectName)
                 description.set("Opinionated idiom")
                 url.set("https://github.com/$projectPath")
