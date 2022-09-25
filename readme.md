@@ -6,12 +6,12 @@ Just a collection of data structures and extension functions for opinionated idi
 
 ## Usage
 
-For gradle:
+For gradle (kotlin DSL):
 ```kotlin
 dependencies {
     // ... your stuff
-    implementation("io.github.mrschyzo:opiniom:0.2.0")
-    // .. your stuff
+    implementation("io.github.mrschyzo:opiniom:0.1.0") //<-- 0.2.0 when I feel like publishing a second version to sonatype
+    // ... your stuff
 }
 ```
 

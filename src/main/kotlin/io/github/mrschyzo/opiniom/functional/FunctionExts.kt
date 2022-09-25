@@ -1,4 +1,9 @@
+@file:Suppress("TooManyFunctions")
 package io.github.mrschyzo.opiniom.functional
+
+import io.github.mrschyzo.opiniom.types.Maybe
+import io.github.mrschyzo.opiniom.types.None
+import io.github.mrschyzo.opiniom.types.Some
 
 /**
  * Identity function
@@ -66,23 +71,21 @@ fun <A, B, C> ((A, B) -> C).flip(): (B, A) -> C = { b, a ->
  * @param condition
  * @return
  */
-@Suppress("FunctionNaming")
-infix fun <O> ((O) -> O).`if`(condition: Boolean): (O) -> O =
+infix fun <O> ((O) -> O).onlyIf(condition: Boolean): (O) -> O =
     if (condition)
         this
     else
         ::identity
 
 /**
- * Lazy version of [if]
+ * Lazy version of [`if`]
  *
  * @param O
  * @param condition
  * @return
  */
-@Suppress("FunctionNaming")
-inline infix fun <O> ((O) -> O).`if`(crossinline condition: (O) -> Boolean): (O) -> O = { value: O ->
-    (this `if` condition(value))(value)
+inline infix fun <O> ((O) -> O).onlyIf(crossinline condition: (O) -> Boolean): (O) -> O = { value: O ->
+    (this onlyIf condition(value))(value)
 }
 
 /**
@@ -98,15 +101,60 @@ inline infix fun <O> ((O) -> O).`if`(crossinline condition: (O) -> Boolean): (O)
  * @param condition
  * @return
  */
-infix fun <O> ((O) -> O).unless(condition: Boolean): (O) -> O =
-    this `if` (!condition)
+infix fun <O> ((O) -> O).onlyUnless(condition: Boolean): (O) -> O =
+    this onlyIf (!condition)
 
 /**
- * Lazy version of [unless]
+ * Lazy version of [onlyUnless]
  *
  * @param O
  * @param condition
  * @return
  */
-inline infix fun <O> ((O) -> O).unless(crossinline condition: (O) -> Boolean): (O) -> O =
-    this `if` (condition andThen Boolean::not)
+inline infix fun <O> ((O) -> O).onlyUnless(crossinline condition: (O) -> Boolean): (O) -> O =
+    this onlyIf (condition andThen Boolean::not)
+
+/**
+ * Applies [this] function if [condition] is true, else return a [None]
+ *
+ * @param condition Decides whether the function is applied or not
+ * @return A function returning [this] function result wrapped into a [Some], a function returning [None] otherwise
+ */
+@Suppress("FunctionNaming")
+infix fun <I : Any, O : Any> ((I) -> O).`if`(condition: Boolean): (I) -> Maybe<O> = {
+    if (condition)
+        Some(this(it))
+    else
+        None()
+}
+
+/**
+ * A functional version of [if]
+ *
+ * @param condition Function to compute the condition on the fly before deciding whether applying [this] function
+ * @return A function returning [this] function result wrapped into a [Some], a function returning [None] otherwise
+ */
+@Suppress("FunctionNaming")
+inline infix fun <I : Any, O : Any> ((I) -> O).`if`(crossinline condition: (I) -> Boolean): (I) -> Maybe<O> = {
+    (this `if` condition(it))(it)
+}
+
+/**
+ * Coerces this function to return a value if its result is [None]
+ *
+ * @param alternative the coercitive function to apply to the original input
+ * @return A function that applies [this] partial function,
+ *         if [None] is returned, the result is [alternative] applied to [this] function input
+ */
+@Suppress("FunctionNaming")
+inline infix fun <I : Any, O : Any> ((I) -> Maybe<O>).`else`(crossinline alternative: (I) -> O): (I) -> O = {
+    this(it).orElse(alternative(it))
+}
+
+/**
+ * Defines a constant function regardless of the input
+ *
+ * @param O the value to be returned in this constant function
+ * @return a constant function with [output] as the result
+ */
+fun <I, O> just(output: O): (I) -> O = { output }
